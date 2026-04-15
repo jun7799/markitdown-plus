@@ -25,6 +25,7 @@ from ._epub_converter import EpubConverter
 from ._csv_converter import CsvConverter
 from ._wechat_mp_converter import WeChatMPConverter
 from ._xtwitter_converter import XTwitterConverter
+from ._xiaohongshu_converter import XiaohongshuConverter
 
 __all__ = [
     "PlainTextConverter",
@@ -49,4 +50,5 @@ __all__ = [
     "CsvConverter",
     "WeChatMPConverter",
     "XTwitterConverter",
+    "XiaohongshuConverter",
 ]

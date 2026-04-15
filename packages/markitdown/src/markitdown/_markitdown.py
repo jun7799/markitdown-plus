@@ -41,6 +41,7 @@ from .converters import (
     CsvConverter,
     WeChatMPConverter,
     XTwitterConverter,
+    XiaohongshuConverter,
 )
 
 from ._base_converter import DocumentConverter, DocumentConverterResult
@@ -191,6 +192,7 @@ class MarkItDown:
             )
             self.register_converter(WeChatMPConverter())
             self.register_converter(XTwitterConverter())
+            self.register_converter(XiaohongshuConverter())
             self.register_converter(RssConverter())
             self.register_converter(WikipediaConverter())
             self.register_converter(YouTubeConverter())

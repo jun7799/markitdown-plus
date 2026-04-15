@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/markitdown.svg)](https://pypi.org/project/markitdown/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/markitdown)
 
-基于微软 [markitdown](https://github.com/microsoft/markitdown) 二次开发，新增 **微信公众号** 和 **X/Twitter** 转 Markdown 功能。
+基于微软 [markitdown](https://github.com/microsoft/markitdown) 二次开发，新增 **微信公众号**、**X/Twitter** 和 **小红书** 转 Markdown 功能。
 
 ## 新增功能
 
@@ -56,6 +56,43 @@ markitdown https://x.com/xxx/status/123456 -o tweet.md
 - 视频提供最高清 mp4 下载链接
 - 图片下载到本地
 - 互动数据表格（浏览/点赞/转发/收藏/评论）
+
+### 小红书笔记 -> Markdown
+
+自动识别 `xiaohongshu.com` 链接，提取笔记内容、图片、互动数据。
+
+```python
+from markitdown import MarkItDown
+
+md = MarkItDown()
+result = md.convert("https://www.xiaohongshu.com/discovery/item/xxxxx")
+print(result.markdown)
+```
+
+```bash
+markitdown https://www.xiaohongshu.com/discovery/item/xxxxx -o xhs.md
+```
+
+**特性：**
+- 支持图文笔记和视频笔记
+- 图片自动下载到本地 `images/` 文件夹
+- 可选 OCR 文字识别（需安装 pytesseract + Tesseract OCR）
+- 提取互动数据（点赞、收藏、评论、分享）
+- 两种获取模式：
+  - **CDP 模式**（推荐）：通过 Chrome DevTools Protocol 站内 fetch，绕过 WAF
+  - **HTTP + Cookie 模式**：通过环境变量 `XHS_COOKIE` 提供登录 Cookie
+
+**CDP 模式使用：**
+1. 安装 [web-access skill](https://github.com/anthropics/claude-code) 的 cdp-proxy
+2. 在 Chrome 中登录小红书
+3. 启动 cdp-proxy（`node check-deps.mjs`）
+4. 直接转换即可，无需手动提供 Cookie
+
+**HTTP + Cookie 模式：**
+设置环境变量或创建 `.xhs_cookie` 文件：
+```bash
+export XHS_COOKIE='a1=xxx; web_session=xxx'
+```
 
 ## 原有功能
 
