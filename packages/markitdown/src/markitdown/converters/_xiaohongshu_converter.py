@@ -491,6 +491,22 @@ class XiaohongshuConverter(DocumentConverter):
             import pytesseract
             from PIL import Image
 
+            # Windows 下自动配置 Tesseract 路径
+            if os.name == "nt":
+                default_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+                if os.path.isfile(default_path):
+                    pytesseract.pytesseract.tesseract_cmd = default_path
+
+                # 自动查找 tessdata（中文语言包）
+                tessdata_candidates = [
+                    os.path.join(os.path.expanduser("~"), "tessdata"),
+                    r"C:\Program Files\Tesseract-OCR\tessdata",
+                ]
+                for td in tessdata_candidates:
+                    if os.path.isfile(os.path.join(td, "chi_sim.traineddata")):
+                        os.environ["TESSDATA_PREFIX"] = td + os.sep
+                        break
+
             img = Image.open(image_path)
             text = pytesseract.image_to_string(img, lang="chi_sim+eng")
             return text.strip() or None
