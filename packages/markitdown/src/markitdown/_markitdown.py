@@ -42,6 +42,7 @@ from .converters import (
     WeChatMPConverter,
     XTwitterConverter,
     XiaohongshuConverter,
+    BilibiliConverter,
 )
 
 from ._base_converter import DocumentConverter, DocumentConverterResult
@@ -193,6 +194,7 @@ class MarkItDown:
             self.register_converter(WeChatMPConverter())
             self.register_converter(XTwitterConverter())
             self.register_converter(XiaohongshuConverter())
+            self.register_converter(BilibiliConverter())
             self.register_converter(RssConverter())
             self.register_converter(WikipediaConverter())
             self.register_converter(YouTubeConverter())
@@ -455,6 +457,25 @@ class MarkItDown:
             )
         # HTTP/HTTPS URIs
         elif uri.startswith("http:") or uri.startswith("https:"):
+            # 优先尝试纯 URL 转换器（不需要下载 HTML，如B站）
+            url_for_match = mock_url or uri
+            url_guess = StreamInfo(
+                url=url_for_match,
+                mimetype="text/html",
+                extension=".html",
+            )
+            empty_stream = io.BytesIO(b"")
+            try:
+                res = self._convert(
+                    file_stream=empty_stream,
+                    stream_info_guesses=[url_guess],
+                    **kwargs,
+                )
+                return res
+            except (UnsupportedFormatException, FileConversionException):
+                pass
+
+            # fallback: 正常下载 HTML 再转换
             response = self._requests_session.get(uri, stream=True)
             response.raise_for_status()
             return self.convert_response(

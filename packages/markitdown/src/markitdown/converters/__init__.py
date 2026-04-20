@@ -26,6 +26,7 @@ from ._csv_converter import CsvConverter
 from ._wechat_mp_converter import WeChatMPConverter
 from ._xtwitter_converter import XTwitterConverter
 from ._xiaohongshu_converter import XiaohongshuConverter
+from ._bilibili_converter import BilibiliConverter
 
 __all__ = [
     "PlainTextConverter",
@@ -51,4 +52,5 @@ __all__ = [
     "WeChatMPConverter",
     "XTwitterConverter",
     "XiaohongshuConverter",
+    "BilibiliConverter",
 ]
