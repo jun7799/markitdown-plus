@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/markitdown.svg)](https://pypi.org/project/markitdown/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/markitdown)
 
-基于微软 [markitdown](https://github.com/microsoft/markitdown) 二次开发，新增 **微信公众号**、**X/Twitter** 和 **小红书** 转 Markdown 功能。
+基于微软 [markitdown](https://github.com/microsoft/markitdown) 二次开发，新增 **微信公众号**、**X/Twitter**、**小红书** 和 **B站视频** 转 Markdown 功能。
 
 ## 新增功能
 
@@ -93,6 +93,33 @@ markitdown https://www.xiaohongshu.com/discovery/item/xxxxx -o xhs.md
 ```bash
 export XHS_COOKIE='a1=xxx; web_session=xxx'
 ```
+
+### B站视频 -> Markdown
+
+自动识别 `bilibili.com/video/` 链接，提取视频元信息和 AI 字幕。
+
+```python
+from markitdown import MarkItDown
+
+md = MarkItDown()
+result = md.convert("https://www.bilibili.com/video/BV1BXQABNE4y/")
+print(result.markdown)
+```
+
+```bash
+markitdown https://www.bilibili.com/video/BV1BXQABNE4y/ -o bilibili.md
+```
+
+**特性：**
+- 提取标题、UP主、时长、发布时间、播放量
+- 互动数据表格（点赞/投币/收藏/弹幕/评论）
+- AI 字幕自动提取（优先中文自动生成）
+- 部分视频无需登录即可获取字幕
+- 需要登录的视频可通过环境变量配置：
+```bash
+export BILIBILI_SESSDATA='你的SESSDATA值'
+```
+或创建 `bilibili_cookies.txt`（Netscape 格式）
 
 ## 原有功能
 
