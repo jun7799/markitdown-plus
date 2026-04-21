@@ -1,9 +1,11 @@
 import os
+import re
 import zipfile
 from defusedxml import minidom
+from pathlib import Path
 from xml.dom.minidom import Document
 
-from typing import BinaryIO, Any, Dict, List
+from typing import BinaryIO, Any, Dict, List, Optional
 
 from ._html_converter import HtmlConverter
 from .._base_converter import DocumentConverterResult
@@ -125,8 +127,35 @@ class EpubConverter(HtmlConverter):
 
             markdown_content.insert(0, "\n".join(metadata_markdown))
 
+            markdown_text = "\n\n".join(markdown_content)
+
+            # EPUB 图片提取：如果调用方传入了 epub_image_dir，则提取图片并修正路径
+            image_dir: Optional[str] = kwargs.get("epub_image_dir")
+            if image_dir:
+                img_extensions = {".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp"}
+                img_files = [
+                    f for f in z.namelist()
+                    if Path(f).suffix.lower() in img_extensions
+                    and not Path(f).name.startswith(".")
+                ]
+                if img_files:
+                    os.makedirs(image_dir, exist_ok=True)
+                    for img_path in img_files:
+                        fname = os.path.basename(img_path)
+                        dest = os.path.join(image_dir, fname)
+                        with open(dest, "wb") as img_f:
+                            img_f.write(z.read(img_path))
+                    # 修正 markdown 中的图片路径
+                    # 使用 os.path.basename(image_dir) 作为相对路径前缀
+                    dir_name = os.path.basename(image_dir)
+                    markdown_text = re.sub(
+                        r'(\.\./|\b)images/',
+                        f'{dir_name}/',
+                        markdown_text,
+                    )
+
             return DocumentConverterResult(
-                markdown="\n\n".join(markdown_content), title=metadata["title"]
+                markdown=markdown_text, title=metadata["title"]
             )
 
     def _get_text_from_node(self, dom: Document, tag_name: str) -> str | None:
